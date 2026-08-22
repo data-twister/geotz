@@ -33,6 +33,16 @@ defmodule Geotz do
     end
   end
 
+  def lookup(coordinates) when is_map(coordinates) do
+    coordinates = case Map.has_key?(coordinates, :coordinates) do
+      true -> coordinates.coordinates
+      false -> coordinates
+    end
+
+    %{lat: lat, lon: lon} = coordinates
+    lookup(lat, lon)
+  end
+
   def lookup(<<lat::binary>>, lng), do: lat |> String.to_float() |> lookup(lng)
   def lookup(lat, <<lng::binary>>), do: lat |> lookup(String.to_float(lng))
 
