@@ -25,8 +25,14 @@ defmodule Geotz do
 
       iex> Geotz.lookup(Decimal.new(19.432551), Decimal.new(-99.191673))
       "America/Mexico_City"
+
+      iex> Geotz.lookup(%{lat: 37.4224858, lon: -122.0855846})
+      "America/Mexico_City"
+
+      iex> Geolixir.geocode("1600 Amphitheatre Parkway, Mountain View, CA") |> Geotz.lookup
+      "America/Mexico_City"
   """
-  @spec lookup(float | String.t | Decimal.t, float | String.t | Decimal.t) :: String.t
+  @spec lookup(float | String.t() | Decimal.t(), float | String.t() | Decimal.t()) :: String.t()
   if Code.ensure_compiled?(Decimal) do
     def lookup(%Decimal{} = lat, %Decimal{} = lng) do
       lat |> Decimal.to_float() |> lookup(Decimal.to_float(lng))
@@ -34,13 +40,17 @@ defmodule Geotz do
   end
 
   def lookup(coordinates) when is_map(coordinates) do
-    coordinates = case Map.has_key?(coordinates, :coordinates) do
-      true -> coordinates.coordinates
-      false -> coordinates
-    end
+    %{lat: lat, lon: lon} =
+      case Map.has_key?(coordinates, :coordinates) do
+        true -> coordinates.coordinates
+        false -> coordinates
+      end
 
-    %{lat: lat, lon: lon} = coordinates
     lookup(lat, lon)
+  end
+
+  def lookup({:ok, coordinates}) when is_map(coordinates) do
+    lookup(coordinates)
   end
 
   def lookup(<<lat::binary>>, lng), do: lat |> String.to_float() |> lookup(lng)
@@ -49,10 +59,10 @@ defmodule Geotz do
   def lookup(lat, lng) do
     n = -1
     x = (180.0 + lng) * 48 / 360.00000000000006
-    y = ( 90.0 - lat) * 24 / 180.00000000000003
+    y = (90.0 - lat) * 24 / 180.00000000000003
 
-    u = x |> Float.floor |> round
-    v = y |> Float.floor |> round
+    u = x |> Float.floor() |> round
+    v = y |> Float.floor() |> round
 
     i = v * 96 + u * 2
     ia = String.at(@tzdata, i)
@@ -63,12 +73,13 @@ defmodule Geotz do
 
     find(i, n, x, y, u, v)
   end
+
   defp find(i, n, x, y, u, v) when i + @tzlength < 3136 do
     n = n + i + 1
     x = :math.fmod((x - u) * 2, 2)
     y = :math.fmod((y - v) * 2, 2)
-    u = x |> Float.floor |> round
-    v = y |> Float.floor |> round
+    u = x |> Float.floor() |> round
+    v = y |> Float.floor() |> round
 
     i = n * 8 + v * 4 + u * 2 + 2304
     ia = String.at(@tzdata, i)

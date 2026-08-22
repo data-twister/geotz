@@ -13,7 +13,7 @@ defmodule Geotz.Mixfile do
       description: description(),
       package: package(),
       docs: docs(),
-      start_permanent: Mix.env == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
@@ -24,7 +24,6 @@ defmodule Geotz.Mixfile do
     """
   end
 
-
   def application do
     [
       extra_applications: [:logger]
@@ -34,7 +33,7 @@ defmodule Geotz.Mixfile do
   defp deps do
     [
       {:decimal, ">= 0.0.0", optional: true},
-      {:ex_doc, ">= 0.18.1", only: :dev},
+      {:ex_doc, ">= 0.18.1", only: :dev}
     ]
   end
 
@@ -44,7 +43,12 @@ defmodule Geotz.Mixfile do
       licenses: ["MIT"],
       links: links(),
       files: [
-        "lib", "config", "mix.exs", "README*", "CHANGELOG*", "LICENSE*"
+        "lib",
+        "config",
+        "mix.exs",
+        "README*",
+        "CHANGELOG*",
+        "LICENSE*"
       ]
     ]
   end
@@ -59,10 +63,9 @@ defmodule Geotz.Mixfile do
 
   def links do
     %{
-      "GitHub"    => "https://github.com/schultzer/geotz",
-      "Readme"    => "https://github.com/schultzer/geotz/blob/v#{@version}/README.md",
+      "GitHub" => "https://github.com/schultzer/geotz",
+      "Readme" => "https://github.com/schultzer/geotz/blob/v#{@version}/README.md",
       "Changelog" => "https://github.com/schultzer/geotz/blob/v#{@version}/CHANGELOG.md"
     }
   end
-
 end
