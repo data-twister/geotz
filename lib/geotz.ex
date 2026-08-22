@@ -53,6 +53,10 @@ defmodule Geotz do
     lookup(coordinates)
   end
 
+  def lookup({:error, reply}) do
+    {:error, reply}
+  end
+
   def lookup(<<lat::binary>>, lng), do: lat |> String.to_float() |> lookup(lng)
   def lookup(lat, <<lng::binary>>), do: lat |> lookup(String.to_float(lng))
 
