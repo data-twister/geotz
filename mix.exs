@@ -33,6 +33,7 @@ defmodule Geotz.Mixfile do
   defp deps do
     [
       {:decimal, ">= 0.0.0", optional: true},
+      {:geolixir, ">= 0.0.0", optional: true},
       {:ex_doc, ">= 0.18.1", only: :dev}
     ]
   end

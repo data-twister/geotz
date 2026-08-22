@@ -39,6 +39,14 @@ defmodule Geotz do
     end
   end
 
+  if Code.ensure_compiled?(Geolixir) do
+    def lookup({:ok, coordinates}) when is_map(coordinates) do
+      coordinates
+      |> Map.from_struct()
+      |> Map.merge(%{timezone: lookup(coordinates)})
+    end
+  end
+
   def lookup(coordinates) when is_map(coordinates) do
     %{lat: lat, lon: lon} =
       case Map.has_key?(coordinates, :coordinates) do
@@ -47,10 +55,6 @@ defmodule Geotz do
       end
 
     lookup(lat, lon)
-  end
-
-  def lookup({:ok, coordinates}) when is_map(coordinates) do
-    Map.merge(coordinates, %{timezone: lookup(coordinates)})
   end
 
   def lookup({:error, reply}) do
