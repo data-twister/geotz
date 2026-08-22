@@ -50,7 +50,7 @@ defmodule Geotz do
   end
 
   def lookup({:ok, coordinates}) when is_map(coordinates) do
-    lookup(coordinates)
+    Map.merge(coordinates, %{timezone: lookup(coordinates)})
   end
 
   def lookup({:error, reply}) do
